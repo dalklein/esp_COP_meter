@@ -8,8 +8,10 @@
 #include <DallasTemperature.h>
 
 const char* mqtt_server = "192.168.15.15";  // Your MQTT Broker IP address
-const char* ssid     = "intothe"; // Your ssid
-const char* password = "transporter1999"; // Your Password
+#include <arduino_secrets.h>
+// wifi info here, or get from arduino_secrets.h
+const char* ssid     = SECRET_SSID; // Your ssid
+const char* password = SECRET_PASS; // Your Password
 int ip2; int ip3;
 
 WiFiClient espClient;

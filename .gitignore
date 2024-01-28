@@ -18,3 +18,5 @@ old_setting_up_sketches/sketch_pubsub8266_example/sketch_pubsub8266_example.ino
 example_hall_effect_flow_code.ino
 DS18B20.pdf
 Hello_ideaspark_OLED.bin
+sketch14_012424_sCOP/arduino_secrets.h
+.vscode/tasks.json
