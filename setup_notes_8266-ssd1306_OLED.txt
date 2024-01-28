@@ -1,0 +1,160 @@
+someone said this:
+Using the Arduino IDE and the U8G2 library with the following works: U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ 14, /* data=*/ 12, /* reset=*/ U8X8_PIN_NONE); Use any of the u8g2 examples. Of course had to put two breadboards together, breaking off one power side strip to breadboard it, but that was expected.
+
+
+11/21/23   it talks!   this is before flashing with arduino ide, would like to save the original flash image.
+
+   get device info
+dklein@TexasToast:~/Projects/uC/esp8266_ssd1306_OLED$ esptool --port /dev/ttyUSB0 --baud 921600 flash_id
+esptool.py v2.8
+Serial port /dev/ttyUSB0
+Connecting....
+Detecting chip type... ESP8266
+Chip is ESP8266EX
+Features: WiFi
+Crystal is 26MHz
+MAC: 3c:71:bf:21:ba:e1
+WARNING: ROM doesn't support changing baud rate. Keeping initial baud rate 115200
+Enabling default SPI flash mode...
+Manufacturer: ef
+Device: 4016
+Detected flash size: 4MB
+Hard resetting via RTS pin...
+
+   download existing hex image  (fails with esptool v2.8 that gets installed by apt-get)
+$ esptool --port /dev/ttyUSB0 --baud 115200 read_flash 0 0x400000 Hello_ideaspark_OLED.bin
+A fatal error occurred: ESP8266 ROM does not support function read_flash.
+
+  installing & running later version of esptool via pip does work, ahah, a 4mb .bin file appears.
+$ pip install esptool
+$ python3 -m esptool --port /dev/ttyUSB0 --baud 115200 read_flash 0 0x400000 Hello_ideaspark_OLED.bin
+esptool.py v4.6.2
+Serial port /dev/ttyUSB0
+Connecting....
+Detecting chip type... Unsupported detection protocol, switching and trying again...
+Connecting....
+Detecting chip type... ESP8266
+Chip is ESP8266EX
+Features: WiFi
+Crystal is 26MHz
+MAC: 3c:71:bf:21:ba:e1
+Uploading stub...
+Running stub...
+Stub running...
+4194304 (100 %)
+4194304 (100 %)
+Read 4194304 bytes at 0x00000000 in 388.9 seconds (86.3 kbit/s)...
+Hard resetting via RTS pin...
+
+made example hello sketch,  see sketch_0
+
+11/24/23    set up DS18b20 temperature probes,  see sketch_1
+   and get wifi working connecting to network.
+https://www.circuits-diy.com/temperature-sensor-web-server-with-esp8266-esp01-ds18b20/
+
+11/26   sketch 1 connects to wifi, prints to lcd ds rom & ram, then
+   fails to finish rest of code, not sure why.
+
+   sketch_ds_wifi_example   uses screen, wifi, reads ds and serves webpage temperature, and sends to serial terminal
+
+11/28  made connector board for multiple ds sensors.  existing example
+   sketch_ds_wifi_example already reads multiple ds', shows ROM,data,temp
+   USE THIS to label sensors & make list
+
+11/29   label 5 short cable ds sensors
+// Addresses of DS18B20s
+uint8_t ds1[8] = { 0x28, 0x75, 0xE1, 0x81, 0xE3, 0x58, 0x3C, 0x13 };  //1m cable
+uint8_t ds2[8] = { 0x28, 0x4F, 0x71, 0x81, 0xE3, 0x64, 0x3C, 0xE6 };  //1m cable
+uint8_t ds3[8] = { 0x28, 0x48, 0xA1, 0x81, 0xE3, 0x87, 0x3C, 0x1D };  //1m cable
+uint8_t ds4[8] = { 0x28, 0xA9, 0xE8, 0x81, 0xE3, 0x12, 0x3C, 0x25 };  //1m cable
+uint8_t ds5[8] = { 0x28, 0x1C, 0x79, 0x81, 0xE3, 0x48, 0x3C, 0x23 };  //1m cable
+
+12/13  label more ds sensors
+uint8_t ds6[8] = { 0x28, 0x66, 0x7C, 0x96, 0xF0, 0x01, 0x3C, 0x9F };  // zone returns
+uint8_t ds7[8] = { 0x28, 0xD6, 0x42, 0x96, 0xF0, 0x01, 0x3C, 0xBE };
+uint8_t ds8[8] = { 0x28, 0x96, 0x92, 0x96, 0xF0, 0x01, 0x3C, 0x95 };
+uint8_t ds9[8] = { 0x28, 0xB1, 0xD1, 0x96, 0xF0, 0x01, 0x3C, 0x01 };
+
+
+
+
+
+
+sketch_2_labeled_temp_probes    print on screen & serial labeled temps
+
+add flow meter code
+https://how2electronics.com/iot-water-flow-meter-using-esp8266-water-flow-sensor/
+use GPIO0, labeled G3
+F = (5Q - 3) +-10%   F (Hz), Q (l/min)
+flowLPM = (((1000.0 / (millis() - pMillisFlow)) * pulse1Sec)+calOffset) / calibrationFactor;
+
+https://forum.arduino.cc/t/esp8266-and-analog-pin-voltage-tolerance/682796
+
+12/01  all that trouble with flow meter: solder bit stuck in impeller,
+   and bad gpio0 pin on esp8266 board #1.  board #2 works fine...
+
+12/02   Q = m * Cp * dT      Cp = 4.19kJ/kg-dC,  density @ 100f ~.993kg/L
+     Q = .993kg/L * 1/60 min/sec * 5/9 dC/dF * 4.19 kJ/kg-dC * flow (L/min) * deltaT (dF)
+     Q = .0385 * flow (L/min) * deltaT (dF)
+
+add code for over the air flashing,  sketch_4    not sure if need/want to do this,
+  but it works.  instruction RAM is 93%, half of which is for flashing, not sure
+  if thats for OTA flashing, serial flashing or either.
+https://randomnerdtutorials.com/esp8266-ota-updates-with-arduino-ide-over-the-air/
+  (future Me, 2 days later, "yes, you want to do this, it's really nice to update remotely!
+    I couldn't imagine all the walking back and forth downstairs to debug!")
+
+esp8266 board #1 seems to have quit/bricked.
+
+add mqtt    https://randomnerdtutorials.com/esp8266-nodemcu-mqtt-publish-bme680-arduino/
+    https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
+  https://github.com/dersimn/ArduinoPubSubClientTools/blob/master/examples/mqtt_esp8266/mqtt_esp8266.ino
+added in node-red / grafana, neato plots, and COP looks reasonable!
+
+12/03  flash esphome on emporia grid-vue energy monitor,
+   https://github.com/emporia-vue-local/esphome
+record current settings & ct circuits
+    mains multiplier  1.02
+    1 - Garage_L1
+    2 - Garage_L2
+    3 - Boiler-Upper(Grid) x2
+    4 - Flood_Lts
+    5 - ASHP(Grid) x2
+    6 - EVSE(Grid) x2
+    7 - GarageCubbyOL
+    8 - BsmtGridOL
+  ~/Projects/uC/emporia_vue  .yaml configuration file, edited for wifi, name, circuits
+  flashed and it works.  A little finicky getting it flashed.  ground the io0 pin while booting,
+  while plugging in the usb cable or connecting the 5v line.  connecting and reconnecting usb makes
+  ttyUSB0 come and go, probably the same as in arduino ide.  Some trouble, maybe due to error in the
+  .yaml file syntax after removing the extra 9-16 channels.
+Should be able to flash OTA, and tried it, but I think so far only did it via USB.
+  ~/Projects/uC/emporia_vue$ esphome dashboard .     and go to 0.0.0.0:6052 to update OTA
+
+anyway, it works now.  Thanks hackers!
+
+$ mosquitto_sub -h 192.168.15.15 -t gridvue/power/sensor/ashpgrid/# -v
+gridvue/power/sensor/ashpgrid/state 15.5
+gridvue/power/sensor/ashpgrid/state 15.4
+gridvue/power/sensor/ashpgrid/state 15.3
+
+$ mosquitto_sub -h 192.168.15.15 -t gridvue/power/sensor/ashpgrid/state -v
+gridvue/power/sensor/ashpgrid/state 15.3
+gridvue/power/sensor/ashpgrid/state 15.8
+
+  sketch_6_COP_MQTT_OTA     collect the now available electrical power signal!
+http://www.steves-internet-guide.com/send-and-receive-integers-and-floats-with-arduino-over-mqtt/
+   (converting the MQTT data value from string that in the MQTT message to float for use)
+https://techtutorialsx.com/2017/04/24/esp32-subscribing-to-mqtt-topic/
+
+  and it might be working, see what it says next time the heatpump runs.
+
+12/04    mqtt receiving ashp power not working, mqtt repeatedly reconnecting
+  redid mqtt, started from pubsub example code, then parsing of mqtt payload to float.
+  that's a pia.  it works, but there must be a simpler way?
+  changed the screen arrangement to fit heat & elec power, and COP
+
+12/8  one instance of bad ds temp sensor reading, -197,
+     added check that temp >0 before saving new value
+
+1/8/24, 1/24/24  minor changes to sCOP, COP
