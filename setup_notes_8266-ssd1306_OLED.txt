@@ -158,3 +158,20 @@ https://techtutorialsx.com/2017/04/24/esp32-subscribing-to-mqtt-topic/
      added check that temp >0 before saving new value
 
 1/8/24, 1/24/24  minor changes to sCOP, COP
+
+1/28/24  setup on MelbaToast, using VSCode w/ Arduino extension
+    look on TexasToast, which board & libraries were selected?
+    board: NodeMCU 1.0 (ESP-12E Module), from ESP8266 boards (3.1.2)
+      add http://arduino.esp8266.com/stable/package_esp8266com_index.json
+      into arduino.additionalUrls, then esp8266 shows up
+
+    libraries:  WiFi, Adafruit BusIO, Adafruit GFX
+    Adafruit SSD1306, DallasTemperature, OneWire,
+    PubSubClient, U8g2
+
+    upload speed 921600
+
+    sudo adduser $USER dialout    # add user to dialout group, for ttyUSB
+    sudo apt remove brltty      # remove brltty, ubuntu 22.04 claims ttyUSB
+
+    

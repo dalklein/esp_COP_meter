@@ -8,7 +8,7 @@
 #include <DallasTemperature.h>
 
 const char* mqtt_server = "192.168.15.15";  // Your MQTT Broker IP address
-#include <arduino_secrets.h>
+#include "arduino_secrets.h"   // "" means to look for the file in current dir
 // wifi info here, or get from arduino_secrets.h
 const char* ssid     = SECRET_SSID; // Your ssid
 const char* password = SECRET_PASS; // Your Password
