@@ -22,6 +22,12 @@ sketch14_012424_sCOP/arduino_secrets.h
 ESP_HeatMeter/arduino_secrets.h
 .vscode/tasks.json
 
+# Whole .vscode dir: c_cpp_properties.json carries absolute include paths that
+# expose the local username. Deliberately excluded when this repo was rebuilt
+# public on 2026-09-20; without this rule a `git add -A` puts them straight back.
+.vscode/
+**/.vscode/
+
 # --- credentials: ignore by NAME anywhere, not just at the two paths above ---
 # The path-specific rules alone did not cover backups or editor swap files, all of
 # which hold the same plaintext. Found 2026-08-04 with four such files untracked and
