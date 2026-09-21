@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "name": "Arduino",
+    //   "includePath": [
+    //     "${workspaceFolder}/**"    // this would include any other files in the workspace, ie: other versions of the main file
+    //   ],
+      "browse": {
+        "path": [
+          "${workspaceFolder}"
+        ],
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "files": [
+        "sketch15_031624_replace_ref_vapor_temp_sensor.ino"
+      ]
+    }
+  ],
+  "version": 4
+}
